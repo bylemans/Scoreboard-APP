@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a1f1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Scoreboard</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNjb3JlYm9hcmQiLAogICJzaG9ydF9uYW1lIjogIlNjb3JlYm9hcmQiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzBhMWYxYSIsCiAgInRoZW1lX2NvbG9yIjogIiMwYTFmMWEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVEVPSUJ0zVXzGUWVDZGZRZ0k1bk5yWlhSamFFWGxiR3dnYm201bGNTZ1lURWdNRG9nTUM0d01EQXdJREF1TURBd01DQXlOUzR1TlRZd05TQXRNVEF1TlRNd09TZDBiM0lnYm05elpWY3Jad1lTWCtaZjFwL1dYOWFEMGpCeUQwdWNPOFNkT0FQZDlKVnRYcXJ5dVp0YUhEc25WdzVPM1V3YzBWd2R6RXdJSE4wYjJ0bExYZHBaSFJvT2pNeElITjBjbTlyWlMxc2FXNWxZMkZ3T2pac2FXNWxPMlpwYkd3NmNtZGlLREkxTlN3eU5UVXNNalUxS1NJdlBqd3ZjM1puUGc9PSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a1f1a;
+            min-height: 100vh;
+            height: 100vh;
+            color: white;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        .timer-section {
+            background: #0f3d2f;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .quarter-label {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .timer {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-play {
+            background: #f59e0b;
+            color: #000;
+        }
+        .btn-next {
+            background: #10b981;
+            color: white;
+        }
+        .btn-reset {
+            background: #ef4444;
+            color: white;
+            width: 100%;
+            margin-top: 0.75rem;
+            justify-content: center;
+        }
+        .teams {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .team {
+            border: 3px solid;
+            border-radius: 1rem;
+            padding: 1rem;
+            background: #0a1f1a;
+        }
+        .team.home {
+            border-color: #ef4444;
+        }
+        .team.away {
+            border-color: #3b82f6;
+        }
+        .team-name {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: inherit;
+            font-weight: 600;
+        }
+        .team-name:focus {
+            outline: 1px solid #9ca3af;
+            border-radius: 0.25rem;
+        }
+        .team-score {
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            font-family: 'Courier New', monospace;
+        }
+        .team.home .team-score {
+            color: #ef4444;
+        }
+        .team.away .team-score {
+            color: #3b82f6;
+        }
+        .score-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .score-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .score-btn:active {
+            transform: scale(0.95);
+        }
+        .team.home .score-btn.minus {
+            background: #1f2937;
+            color: white;
+        }
+        .team.home .score-btn.plus {
+            background: #ef4444;
+            color: white;
+        }
+        .team.away .score-btn.minus {
+            background: #1f2937;
+            color: white;
+        }
+        .team.away .score-btn.plus {
+            background: #3b82f6;
+            color: white;
+        }
+        .breakdown {
+            background: #0f3d2f;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .reset-container {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+        .breakdown-title {
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .quarters-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+        .quarter-box {
+            background: #1a4d3a;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .quarter-box.active {
+            background: #22c55e;
+        }
+        .quarter-box-label {
+            font-size: 0.625rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+            font-weight: bold;
+        }
+        .quarter-box.active .quarter-box-label {
+            color: #000;
+        }
+        .quarter-scores {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+        .quarter-score {
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+        .quarter-score.home {
+            color: #ef4444;
+        }
+        .quarter-score.away {
+            color: #3b82f6;
+        }
+        .quarter-box.active .quarter-score {
+            color: #000;
+        }
+        .signature {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span style="font-size: 1.5rem;">⚽</span>
+            <h1>Scoreboard APP</h1>
+        </div>
+        
+        <div class="timer-section">
+            <div class="quarter-label">Quarter <span id="currentQuarter">1</span> / 4</div>
+            <div class="timer" id="timer">15:00</div>
+            <div class="timer-controls">
+                <button class="btn btn-play" id="playPause">▶ Play</button>
+                <button class="btn btn-next" id="nextQuarter">▶| Next</button>
+            </div>
+        </div>
+
+        <div class="teams">
+            <div class="team home">
+                <input type="text" class="team-name" id="homeName" value="HOME" maxlength="12">
+                <div class="team-score" id="homeTotal">0</div>
+                <div class="score-buttons">
+                    <button class="score-btn minus" onclick="addScore('home', -1)">−</button>
+                    <button class="score-btn plus" onclick="addScore('home', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="team away">
+                <input type="text" class="team-name" id="awayName" value="AWAY" maxlength="12">
+                <div class="team-score" id="awayTotal">0</div>
+                <div class="score-buttons">
+                    <button class="score-btn minus" onclick="addScore('away', -1)">−</button>
+                    <button class="score-btn plus" onclick="addScore('away', 1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="breakdown">
+            <div class="breakdown-title">Quarter Breakdown</div>
+            <div class="quarters-grid" id="quartersGrid"></div>
+        </div>
+
+        <div class="reset-container">
+            <button class="btn btn-reset" id="resetTimer">↻ Reset Game</button>
+        </div>
+
+        <div class="signature">tby.be</div>
+    </div>
+
+    <script>
+        let homeScore = [0, 0, 0, 0];
+        let awayScore = [0, 0, 0, 0];
+        let currentQuarter = 0;
+        let timeRemaining = 900;
+        let isRunning = false;
+        let startTimestamp = null;
+        let pausedTime = 900;
+        let timerInterval = null;
+        let alarmTimeout = null;
+        let alarmHasFired = false;
+        let audioContext = null;
+        let unlocked = false;
+        let notificationPermission = false;
+        
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                notificationPermission = (permission === 'granted');
+            });
+        } else if ('Notification' in window && Notification.permission === 'granted') {
+            notificationPermission = true;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function unlockAudio() {
+            if (unlocked) return;
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0;
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start(0);
+                oscillator.stop(0.001);
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                unlocked = true;
+            } catch (e) {}
+        }
+
+        function playAlarm() {
+            console.log('🔔 Alarm triggered');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([1000, 300, 1000, 300, 1000, 500]);
+                setTimeout(() => {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([800, 200, 800, 200, 800, 200, 800, 500]);
+                    }
+                }, 2500);
+                setTimeout(() => {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([1000, 300, 1000, 300, 1000]);
+                    }
+                }, 5500);
+            }
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    const notification = new Notification('⚽ TIME IS UP!', {
+                        body: `Quarter ${currentQuarter + 1} has ended!\nTimer: 0:00`,
+                        requireInteraction: true,
+                        vibrate: [1000, 300, 1000, 300, 1000],
+                    });
+                    notification.onclick = function() {
+                        window.focus();
+                        this.close();
+                    };
+                } catch (e) {}
+            }
+            
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                for (let i = 0; i < 7; i++) {
+                    setTimeout(() => {
+                        try {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = 1000;
+                            osc.type = 'square';
+                            gain.gain.setValueAtTime(1.0, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                            osc.start();
+                            osc.stop(audioContext.currentTime + 0.5);
+                        } catch (e) {}
+                    }, i * 600);
+                }
+                
+                if (window.speechSynthesis) {
+                    setTimeout(() => {
+                        const utterance = new SpeechSynthesisUtterance('Time is up! Quarter ended!');
+                        utterance.volume = 1.0;
+                        window.speechSynthesis.speak(utterance);
+                    }, 200);
+                }
+            } catch (e) {}
+        }
+
+        function updateTimer() {
+            if (isRunning && startTimestamp) {
+                const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+                timeRemaining = Math.max(0, pausedTime - elapsed);
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('timer').textContent = formatTime(timeRemaining);
+            document.getElementById('currentQuarter').textContent = currentQuarter + 1;
+            document.getElementById('homeTotal').textContent = homeScore.reduce((a, b) => a + b, 0);
+            document.getElementById('awayTotal').textContent = awayScore.reduce((a, b) => a + b, 0);
+            renderQuarters();
+            document.getElementById('nextQuarter').disabled = currentQuarter === 3;
+        }
+
+        function renderQuarters() {
+            const container = document.getElementById('quartersGrid');
+            container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const box = document.createElement('div');
+                box.className = `quarter-box ${i === currentQuarter ? 'active' : ''}`;
+                box.innerHTML = `
+                    <div class="quarter-box-label">Q${i + 1}</div>
+                    <div class="quarter-scores">
+                        <div class="quarter-score home">${homeScore[i]}</div>
+                        <div class="quarter-score away">${awayScore[i]}</div>
+                    </div>
+                `;
+                container.appendChild(box);
+            }
+        }
+
+        function addScore(team, points) {
+            if (team === 'home') {
+                homeScore[currentQuarter] = Math.max(0, homeScore[currentQuarter] + points);
+            } else {
+                awayScore[currentQuarter] = Math.max(0, awayScore[currentQuarter] + points);
+            }
+            updateDisplay();
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('playPause');
+            if (isRunning) {
+                isRunning = false;
+                btn.textContent = '▶ Play';
+                pausedTime = timeRemaining;
+                if (timerInterval) clearInterval(timerInterval);
+                if (alarmTimeout) {
+                    clearTimeout(alarmTimeout);
+                    alarmTimeout = null;
+                }
+            } else {
+                unlockAudio();
+                isRunning = true;
+                alarmHasFired = false;
+                btn.textContent = '⏸ Pause';
+                startTimestamp = Date.now();
+                pausedTime = timeRemaining;
+                timerInterval = setInterval(updateTimer, 100);
+                
+                if (timeRemaining > 0) {
+                    if (alarmTimeout) clearTimeout(alarmTimeout);
+                    alarmTimeout = setTimeout(() => {
+                        if (!alarmHasFired) {
+                            alarmHasFired = true;
+                            playAlarm();
+                            isRunning = false;
+                            btn.textContent = '▶ Play';
+                            if (timerInterval) clearInterval(timerInterval);
+                            timeRemaining = 0;
+                            pausedTime = 0;
+                            updateDisplay();
+                        }
+                    }, timeRemaining * 1000);
+                }
+            }
+        }
+
+        document.getElementById('playPause').addEventListener('click', toggleTimer);
+        
+        document.getElementById('resetTimer').addEventListener('click', () => {
+            // Reset everything
+            homeScore = [0, 0, 0, 0];
+            awayScore = [0, 0, 0, 0];
+            currentQuarter = 0;
+            timeRemaining = 900;
+            pausedTime = 900;
+            isRunning = false;
+            startTimestamp = null;
+            alarmHasFired = false;
+            if (timerInterval) clearInterval(timerInterval);
+            if (alarmTimeout) {
+                clearTimeout(alarmTimeout);
+                alarmTimeout = null;
+            }
+            document.getElementById('playPause').textContent = '▶ Play';
+            updateDisplay();
+        });
+
+        document.getElementById('nextQuarter').addEventListener('click', () => {
+            if (currentQuarter < 3) {
+                currentQuarter++;
+                timeRemaining = 900;
+                pausedTime = 900;
+                isRunning = false;
+                startTimestamp = null;
+                alarmHasFired = false;
+                if (timerInterval) clearInterval(timerInterval);
+                if (alarmTimeout) {
+                    clearTimeout(alarmTimeout);
+                    alarmTimeout = null;
+                }
+                document.getElementById('playPause').textContent = '▶ Play';
+                updateDisplay();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && isRunning) {
+                updateTimer();
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4gewogIGV2ZW50LndhaXRVbnRpbChzZWxmLnNraXBXYWl0aW5nKCkpOwp9KTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdhY3RpdmF0ZScsIGV2ZW50ID0+IHsKICBldmVudC53YWl0VW50aWwoc2VsZi5jbGllbnRzLmNsYWltKCkpOwp9KTs=');
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
